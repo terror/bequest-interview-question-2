@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+# Install dependencies
+(cd client && bun install)
+(cd server && bun install)
+(cd verifier && wasm-pack build --target web --out-dir ../server/lib)
+
+# Run the server and client concurrently
+concurrently \
+  --kill-others \
+  --names 'SERVER,CLIENT' \
+  --prefix-colors 'green.bold,magenta.bold' \
+  --prefix '[{name}] ' \
+  --prefix-length 2 \
+  --success first \
+  --handle-input \
+  --timestamp-format 'HH:mm:ss' \
+  --color \
+  -- \
+  'cd server && bun app.ts' \
+  'cd client && bun run dev'
